@@ -1,29 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>unopened file v2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>dark game</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div id="menu">
-  <h1>unopened file</h1>
-  <button id="newGame">new game</button>
-  <button id="continueGame">continue</button>
-  <button id="resetGame">reset save</button>
+  <h1>dark game</h1>
+  <button id="startBtn" class="menu-btn">start</button>
 </div>
 
-<canvas id="c"></canvas>
+<div id="fade"></div>
 
-<div id="hud">
-  <div id="hp"></div>
-  <div id="stamina"></div>
-  <div id="frags"></div>
-</div>
+<canvas id="game"></canvas>
 
-<script src="game.js"></script>
+<script src="game.js" defer></script>
 </body>
 </html>
