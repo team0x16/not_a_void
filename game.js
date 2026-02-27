@@ -1,40 +1,60 @@
-const canvas = document.getElementById("c");
+const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-let W,H;
-function resize(){
-  W=canvas.width=innerWidth;
-  H=canvas.height=innerHeight;
+const menu = document.getElementById("menu");
+const startBtn = document.getElementById("startBtn");
+const fade = document.getElementById("fade");
+
+let running = false;
+let player = { x: 200, y: 200, size: 30, speed: 3 };
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
 resize();
-addEventListener("resize",resize);
+window.addEventListener("resize", resize);
 
-// ============================
-// CORE
-// ============================
+const keys = {};
+window.addEventListener("keydown", e => keys[e.key.toLowerCase()] = true);
+window.addEventListener("keyup", e => keys[e.key.toLowerCase()] = false);
 
-class Entity{
-  constructor(wx,wy){
-    this.wx=wx;
-    this.wy=wy;
-    this.alive=true;
-  }
-  update(dt){}
-  render(){}
+function update() {
+  if (keys["w"]) player.y -= player.speed;
+  if (keys["s"]) player.y += player.speed;
+  if (keys["a"]) player.x -= player.speed;
+  if (keys["d"]) player.x += player.speed;
+
+  // границы
+  player.x = Math.max(0, Math.min(canvas.width - player.size, player.x));
+  player.y = Math.max(0, Math.min(canvas.height - player.size, player.y));
 }
 
-// ============================
-// PLAYER
-// ============================
+function draw() {
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-class Player extends Entity{
-  constructor(wx,wy){
-    super(wx,wy);
-    this.hp=5;
-    this.maxHp=5;
-    this.stamina=100;
-    this.combo=0;
-    this.comboTimer=0;
+  ctx.fillStyle = "white";
+  ctx.fillRect(player.x, player.y, player.size, player.size);
+}
+
+function loop() {
+  if (!running) return;
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+startBtn.addEventListener("click", () => {
+  fade.style.opacity = 1;
+
+  setTimeout(() => {
+    menu.classList.add("hidden");
+    running = true;
+    fade.style.opacity = 0;
+    loop();
+  }, 600);
+});    this.comboTimer=0;
     this.inv=0;
     this.dashCd=0;
     this.vx=0;
