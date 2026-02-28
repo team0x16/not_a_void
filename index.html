@@ -874,46 +874,139 @@ function getGrass(x,y){
   grassCache.set(k,blades); return blades;
 }
 
-function drawTile(x,y,type){
-  if(!isTileVisible(x,y)) return;
+// ── TILE SPRITE CACHE ───────────────────────────────────────────
+const _tileCache = {};
+function buildTileSprite(type) {
+  const pw = TW + 4, ph = TH + WALL_H + 8;
+  const oc = document.createElement('canvas');
+  oc.width = pw; oc.height = ph;
+  const ox = oc.getContext('2d');
+  const hw=TW/2, hh=TH/2, cx=pw/2, cy=hh+3;
+  const isR = type==='raised';
   if(type==='void'){
-    const{sx,sy}=toScreen(x-cam.wx,y-cam.wy); const hw=TW/2,hh=TH/2;
-    ctx.fillStyle='#050310';
-    ctx.beginPath();ctx.moveTo(sx,sy-hh);ctx.lineTo(sx+hw,sy);ctx.lineTo(sx,sy+hh);ctx.lineTo(sx-hw,sy);ctx.closePath();ctx.fill();
-    const ag=ctx.createRadialGradient(sx,sy,0,sx,sy,hw*.8);
-    ag.addColorStop(0,'rgba(40,5,80,.2)');ag.addColorStop(1,'rgba(0,0,0,0)');
-    ctx.fillStyle=ag;ctx.beginPath();ctx.moveTo(sx,sy-hh);ctx.lineTo(sx+hw,sy);ctx.lineTo(sx,sy+hh);ctx.lineTo(sx-hw,sy);ctx.closePath();ctx.fill();
-    return;
+    ox.fillStyle='#06030f';
+    ox.beginPath();ox.moveTo(cx,cy-hh);ox.lineTo(cx+hw,cy);ox.lineTo(cx,cy+hh);ox.lineTo(cx-hw,cy);ox.closePath();ox.fill();
+    ox.fillStyle='rgba(45,6,85,.22)';
+    ox.beginPath();ox.moveTo(cx,cy-hh+3);ox.lineTo(cx+hw-4,cy);ox.lineTo(cx,cy+hh-3);ox.lineTo(cx-hw+4,cy);ox.closePath();ox.fill();
+  } else {
+    ox.fillStyle=isR?'#1c1435':'#130e1e';
+    ox.beginPath();ox.moveTo(cx-hw,cy);ox.lineTo(cx,cy+hh);ox.lineTo(cx,cy+hh+WALL_H);ox.lineTo(cx-hw,cy+WALL_H);ox.closePath();ox.fill();
+    ox.fillStyle=isR?'#150f28':'#0e0b18';
+    ox.beginPath();ox.moveTo(cx+hw,cy);ox.lineTo(cx,cy+hh);ox.lineTo(cx,cy+hh+WALL_H);ox.lineTo(cx+hw,cy+WALL_H);ox.closePath();ox.fill();
+    ox.fillStyle=isR?'#241c3a':'#1a1530';
+    ox.beginPath();ox.moveTo(cx,cy-hh);ox.lineTo(cx+hw,cy);ox.lineTo(cx,cy+hh);ox.lineTo(cx-hw,cy);ox.closePath();ox.fill();
+    ox.strokeStyle=isR?'rgba(108,72,185,.4)':'rgba(62,44,105,.25)';ox.lineWidth=1;
+    ox.beginPath();ox.moveTo(cx,cy-hh);ox.lineTo(cx+hw,cy);ox.lineTo(cx,cy+hh);ox.lineTo(cx-hw,cy);ox.closePath();ox.stroke();
   }
-  const{sx,sy}=toScreen(x-cam.wx,y-cam.wy); const hw=TW/2,hh=TH/2;
-  const isR=(type==='raised');
-  ctx.fillStyle=isR?'#1a1230':'#110d1c';
-  ctx.beginPath();ctx.moveTo(sx-hw,sy);ctx.lineTo(sx,sy+hh);ctx.lineTo(sx,sy+hh+WALL_H);ctx.lineTo(sx-hw,sy+WALL_H);ctx.closePath();ctx.fill();
-  ctx.fillStyle=isR?'#130e24':'#0d0a16';
-  ctx.beginPath();ctx.moveTo(sx+hw,sy);ctx.lineTo(sx,sy+hh);ctx.lineTo(sx,sy+hh+WALL_H);ctx.lineTo(sx+hw,sy+WALL_H);ctx.closePath();ctx.fill();
-  const tg=ctx.createLinearGradient(sx,sy-hh,sx+2,sy+hh+2);
-  if(isR){tg.addColorStop(0,'#2c2242');tg.addColorStop(1,'#1e1832');}
-  else   {tg.addColorStop(0,'#1e1830');tg.addColorStop(1,'#150f22');}
-  ctx.fillStyle=tg;
-  ctx.beginPath();ctx.moveTo(sx,sy-hh);ctx.lineTo(sx+hw,sy);ctx.lineTo(sx,sy+hh);ctx.lineTo(sx-hw,sy);ctx.closePath();ctx.fill();
-  ctx.save();ctx.globalAlpha=.08;ctx.strokeStyle='#fff';ctx.lineWidth=.5;
-  const sr=((x*31+y*17)%12)/12;
-  if(sr<.4){ctx.beginPath();ctx.moveTo(sx-hw*.3,sy-hh*.2);ctx.lineTo(sx+hw*.1,sy+hh*.3);ctx.stroke();}
-  ctx.restore();
-  ctx.strokeStyle=isR?'rgba(120,85,200,.35)':'rgba(70,50,110,.22)';ctx.lineWidth=1;
-  ctx.beginPath();ctx.moveTo(sx,sy-hh);ctx.lineTo(sx+hw,sy);ctx.lineTo(sx,sy+hh);ctx.lineTo(sx-hw,sy);ctx.closePath();ctx.stroke();
-  const blades=getGrass(x,y);
-  blades.forEach(b=>{
-    ctx.save();ctx.globalAlpha=b.a;ctx.strokeStyle=b.col;ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(sx+b.bx,sy+b.by);ctx.quadraticCurveTo(sx+b.bx+b.lean*.5,sy+b.by-b.h*.6,sx+b.bx+b.lean,sy+b.by-b.h);ctx.stroke();
-    if(b.twin){ctx.globalAlpha*=.5;ctx.beginPath();ctx.moveTo(sx+b.bx+1.5,sy+b.by);ctx.lineTo(sx+b.bx+b.lean*.4+1,sy+b.by-b.h*.7);ctx.stroke();}
-    ctx.restore();
-  });
+  return oc;
+}
+['floor','raised','void'].forEach(t=>{ _tileCache[t]=buildTileSprite(t); });
+
+// ── WORLD OFFSCREEN CANVAS ───────────────────────────────────────
+// рисуем все тайлы один раз в offscreen, потом просто drawImage
+let worldOC = null, worldOCtx = null;
+let worldOC_camX = null, worldOC_camY = null;
+const WORLD_MARGIN = 6; // тайлов запаса за краями
+
+function isCamMoved() {
+  const cx = Math.round(cam.wx), cy = Math.round(cam.wy);
+  return cx !== worldOC_camX || cy !== worldOC_camY;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// DRAW CHARACTER
-// ═══════════════════════════════════════════════════════════════
+function rebuildWorldCanvas() {
+  const cx = Math.round(cam.wx), cy = Math.round(cam.wy);
+  worldOC_camX = cx; worldOC_camY = cy;
+
+  // сколько тайлов влезает на экран
+  const tilesW = Math.ceil(W / (TW/2)) + WORLD_MARGIN*2 + 2;
+  const tilesH = Math.ceil(H / (TH/2)) + WORLD_MARGIN*2 + 2;
+
+  const ow = W + (WORLD_MARGIN * TW);
+  const oh = H + (WORLD_MARGIN * (TH + WALL_H));
+
+  if(!worldOC || worldOC.width !== ow || worldOC.height !== oh) {
+    worldOC = document.createElement('canvas');
+    worldOC.width  = ow;
+    worldOC.height = oh;
+    worldOCtx = worldOC.getContext('2d');
+  }
+
+  worldOCtx.clearRect(0, 0, ow, oh);
+
+  // смещение: центр мирового canvas совпадает с центром экрана
+  const offX = ow/2 - W/2;
+  const offY = oh/2 - H/2;
+
+  // рисуем все видимые тайлы в offscreen
+  const pw = TW+4, ph = TH+WALL_H+8;
+
+  for(const tile of sortedTiles) {
+    const rdx = tile.x - cam.wx, rdy = tile.y - cam.wy;
+    const sxR = (rdx - rdy);
+    const syR = (rdx + rdy);
+    if(Math.abs(sxR) > (tilesW) || Math.abs(syR) > (tilesH*2)) continue;
+
+    const sx = W/2 + rdx * TW/2 - rdy * TW/2 + offX;
+    const sy = H/2 + rdx * TH/2 + rdy * TH/2 + offY;
+    const dx = Math.round(sx - pw/2);
+    const dy = Math.round(sy - TH/2 - 3);
+
+    worldOCtx.drawImage(_tileCache[tile.type] || _tileCache['floor'], dx, dy);
+    if(tile.type !== 'void') {
+      const gs = getGrassSprite(tile.x, tile.y);
+      if(gs) worldOCtx.drawImage(gs, dx, dy);
+    }
+  }
+}
+
+// отдельная функция для рисования тайла в основной контекст (для painter's algo с entities)
+function drawTileOnMain(x, y, type) {
+  const{sx,sy}=toScreen(x-cam.wx,y-cam.wy);
+  const pw=TW+4, ph=TH+WALL_H+8;
+  const dx=Math.round(sx-pw/2), dy=Math.round(sy-TH/2-3);
+  ctx.drawImage(_tileCache[type]||_tileCache['floor'], dx, dy);
+  if(type!=='void'){
+    const gs=getGrassSprite(x,y);
+    if(gs) ctx.drawImage(gs, dx, dy);
+  }
+}
+
+
+// grass sprites кешируются отдельно (уникальны для каждого тайла)
+const _grassCache2 = new Map();
+function getGrassSprite(x,y){
+  const k=`${x},${y}`;
+  if(_grassCache2.has(k)) return _grassCache2.get(k);
+  const blades=getGrass(x,y);
+  if(!blades.length){ _grassCache2.set(k,null); return null; }
+  const pw=TW+4, ph=TH+WALL_H+8;
+  const oc=document.createElement('canvas'); oc.width=pw; oc.height=ph;
+  const ox=oc.getContext('2d');
+  const cx=pw/2, cy=TH/2+3;
+  blades.forEach(b=>{
+    ox.save();ox.globalAlpha=b.a;ox.strokeStyle=b.col;ox.lineWidth=1;
+    ox.beginPath();ox.moveTo(cx+b.bx,cy+b.by);
+    ox.quadraticCurveTo(cx+b.bx+b.lean*.5,cy+b.by-b.h*.6,cx+b.bx+b.lean,cy+b.by-b.h);
+    ox.stroke();
+    if(b.twin){ox.globalAlpha*=.5;ox.beginPath();ox.moveTo(cx+b.bx+1.5,cy+b.by);ox.lineTo(cx+b.bx+b.lean*.4+1,cy+b.by-b.h*.7);ox.stroke();}
+    ox.restore();
+  });
+  _grassCache2.set(k,oc);
+  return oc;
+}
+
+function drawTile(x,y,type){
+  if(!isTileVisible(x,y)) return;
+  const{sx,sy}=toScreen(x-cam.wx,y-cam.wy);
+  const pw=TW+4, ph=TH+WALL_H+8;
+  const dx=Math.round(sx-pw/2), dy=Math.round(sy-TH/2-3);
+  ctx.drawImage(_tileCache[type]||_tileCache['floor'], dx, dy);
+  if(type!=='void'){
+    const gs=getGrassSprite(x,y);
+    if(gs) ctx.drawImage(gs, dx, dy);
+  }
+}
+
 function drawChar(sx,sy,alpha=1,scale=1,t2=0,attacking=false,atkTimer=0,atkDir={x:1,y:0},hitFlash=false,dashing=false){
   const h=46*scale, w=22*scale;
   ctx.save(); ctx.globalAlpha=alpha;
@@ -1134,7 +1227,7 @@ function togglePause(){
 // ═══════════════════════════════════════════════════════════════
 // DUST MOTES
 // ═══════════════════════════════════════════════════════════════
-const dust=Array.from({length:50},()=>({
+const dust=Array.from({length:25},()=>({
   x:Math.random()*W, y:Math.random()*H,
   vx:(Math.random()-.5)*.2, vy:-(Math.random()*.18+.04),
   r:Math.random()*1.2+.2, a:Math.random()*.09+.01, w:Math.random()*Math.PI*2
@@ -1230,14 +1323,24 @@ function update(dt){
 // ═══════════════════════════════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════════════════════════════
+let vigCache=null,vigW=0,vigH=0;
+let bgGradCache=null, bgGradW=0, bgGradH=0;
 function render(){
   ctx.clearRect(0,0,W,H);
   ctx.fillStyle='#020108'; ctx.fillRect(0,0,W,H);
-  const fg=ctx.createRadialGradient(W*.5,H*.5,0,W*.5,H*.5,W*.7);
-  fg.addColorStop(0,'rgba(12,8,22,0)'); fg.addColorStop(1,'rgba(4,2,8,.5)');
-  ctx.fillStyle=fg; ctx.fillRect(0,0,W,H);
+  if(!bgGradCache||bgGradW!==W||bgGradH!==H){
+    bgGradCache=ctx.createRadialGradient(W*.5,H*.5,0,W*.5,H*.5,W*.7);
+    bgGradCache.addColorStop(0,'rgba(12,8,22,0)'); bgGradCache.addColorStop(1,'rgba(4,2,8,.5)');
+    bgGradW=W; bgGradH=H;
+  }
+  ctx.fillStyle=bgGradCache; ctx.fillRect(0,0,W,H);
 
-  dust.forEach(m=>{ctx.save();ctx.globalAlpha=m.a;ctx.fillStyle='#b0a050';ctx.beginPath();ctx.arc(m.x,m.y,m.r,0,Math.PI*2);ctx.fill();ctx.restore();});
+  ctx.fillStyle='#b0a050';
+  dust.forEach(m=>{ctx.globalAlpha=m.a;ctx.beginPath();ctx.arc(m.x,m.y,m.r,0,Math.PI*2);ctx.fill();});
+  ctx.globalAlpha=1;
+
+  // ── обновляем world canvas если камера сдвинулась ───────────────
+  if(!worldOC || isCamMoved()) rebuildWorldCanvas();
 
   // ── WORLD TRANSFORM (zoom + shake) ──────────────────────────
   ctx.save();
@@ -1245,31 +1348,35 @@ function render(){
   ctx.scale(zoom,zoom);
   ctx.translate(-W/2,-H/2);
 
+  // blit world canvas (все тайлы одним drawImage)
+  const offX = worldOC.width/2  - W/2;
+  const offY = worldOC.height/2 - H/2;
+  ctx.drawImage(worldOC, -offX, -offY);
+
+  // поверх тайлов рисуем entities в правильном depth order
   const pd=P.wx+P.wy;
   let drawnP=false, drawnB=false;
   const bossDepth=BOSS.wx+BOSS.wy;
-  const aliveEnemies=ENEMIES.filter(e=>e.alive).sort((a,b)=>(a.wx+a.wy)-(b.wx+b.wy));
+  const aliveEnemies=ENEMIES.filter(e=>e.alive);
+  aliveEnemies.sort((a,b)=>(a.wx+a.wy)-(b.wx+b.wy));
+
+  // только видимые враги
+  const visEnemies = aliveEnemies.filter(e=>{
+    const dx=e.wx-cam.wx, dy=e.wy-cam.wy;
+    return Math.abs(dx-dy)<(W/TW+4) && Math.abs(dx+dy)<(H/TH*2+8);
+  });
   let ei=0;
 
-  // frustum culling — сколько тайлов влезает на экран с запасом
-  const CULL_PAD = 4; // запас в тайлах
-  const visW = (W / zoom / TW) + CULL_PAD;
-  const visH = (H / zoom / TH) + CULL_PAD;
-
   for(const tile of sortedTiles){
-    // изо-пространство: тайл виден если его экранная позиция в пределах W/H
-    const rdx = tile.x - cam.wx, rdy = tile.y - cam.wy;
-    const screenX = (rdx - rdy);   // в единицах TW/2
-    const screenY = (rdx + rdy);   // в единицах TH/2
-    if(Math.abs(screenX) > visW * 2 || Math.abs(screenY) > visH * 4) continue;
-
+    const rdx=tile.x-cam.wx, rdy=tile.y-cam.wy;
+    if(Math.abs(rdx-rdy)>(W/TW+4)||Math.abs(rdx+rdy)>(H/TH*2+8)) continue;
     const depth=tile.x+tile.y;
-    while(ei<aliveEnemies.length&&(aliveEnemies[ei].wx+aliveEnemies[ei].wy)<=depth) drawEnemy(aliveEnemies[ei++]);
+    while(ei<visEnemies.length&&(visEnemies[ei].wx+visEnemies[ei].wy)<=depth) drawEnemy(visEnemies[ei++]);
     if(!drawnB&&depth>bossDepth){drawBoss();drawnB=true;}
     if(!drawnP&&depth>pd){renderPlayer();drawnP=true;}
-    drawTile(tile.x,tile.y,tile.type);
+    // тайлы уже в worldOC — не рисуем повторно
   }
-  while(ei<aliveEnemies.length) drawEnemy(aliveEnemies[ei++]);
+  while(ei<visEnemies.length) drawEnemy(visEnemies[ei++]);
   if(!drawnB) drawBoss();
   if(!drawnP) renderPlayer();
 
@@ -1278,17 +1385,18 @@ function render(){
 
   ctx.restore(); // ── END WORLD ──
 
-  // vignette
-  const v=ctx.createRadialGradient(W/2,H/2,H*.08,W/2,H/2,H*.75);
-  v.addColorStop(0,'rgba(0,0,0,0)'); v.addColorStop(1,'rgba(0,0,0,.88)');
-  ctx.fillStyle=v; ctx.fillRect(0,0,W,H);
+  if(!vigCache||vigW!==W||vigH!==H){
+    vigCache=ctx.createRadialGradient(W/2,H/2,H*.08,W/2,H/2,H*.75);
+    vigCache.addColorStop(0,'rgba(0,0,0,0)');vigCache.addColorStop(1,'rgba(0,0,0,.88)');
+    vigW=W;vigH=H;
+  }
+  ctx.fillStyle=vigCache;ctx.fillRect(0,0,W,H);
 
   if(deathFlash>0){ctx.fillStyle=`rgba(60,0,20,${deathFlash/20*.5})`;ctx.fillRect(0,0,W,H);deathFlash--;}
   if(P.invTimer>80){ctx.fillStyle=`rgba(160,0,30,${(P.invTimer-80)/10*.15})`;ctx.fillRect(0,0,W,H);}
   if(currentZone===3){ctx.fillStyle='rgba(40,0,15,.07)';ctx.fillRect(0,0,W,H);}
 
-  ctx.fillStyle='rgba(0,0,0,.018)';
-  for(let y=0;y<H;y+=3) ctx.fillRect(0,y,W,1);
+
 }
 
 function renderPlayer(){
