@@ -10,7 +10,7 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
 :root{
-  --bg:#0a0a09;
+  --bg:#0d0c0f;
   --paper:#e8e3d9;
   --dim:#3a3830;
   --muted:#5a554a;
@@ -25,6 +25,25 @@ body{
   font-family:'Courier Prime',monospace;
   overflow-x:hidden;
   cursor:none;
+}
+
+/* ambient bg gradient */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 50%, rgba(40,30,60,0.5) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 80% 30%, rgba(20,40,50,0.4) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 50% 80%, rgba(30,20,40,0.3) 0%, transparent 70%);
+  pointer-events:none;
+  animation:ambientShift 12s ease-in-out infinite alternate;
+}
+@keyframes ambientShift{
+  0%{opacity:0.6}
+  50%{opacity:1}
+  100%{opacity:0.7}
 }
 
 ::-webkit-scrollbar{width:2px}
@@ -132,12 +151,12 @@ body{
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
 .big-head{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,52px);font-weight:700;line-height:1.05;margin-bottom:24px}
 .big-head em{font-style:italic;color:var(--accent)}
-.body-text{font-size:12px;line-height:1.9;color:var(--muted);margin-bottom:16px}
+.body-text{font-size:14px;line-height:1.9;color:var(--muted);margin-bottom:16px}
 .excerpt{border-left:1px solid var(--dim);padding-left:20px;margin-bottom:20px}
-.excerpt p{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;line-height:1.8;color:var(--accent)}
+.excerpt p{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;line-height:1.8;color:var(--accent)}
 .excerpt span{display:block;margin-top:8px;font-size:8px;letter-spacing:0.3em;color:var(--dim);text-transform:uppercase}
 .btn{
-  display:inline-block;font-size:9px;letter-spacing:0.4em;
+  display:inline-block;font-size:11px;letter-spacing:0.4em;
   text-transform:uppercase;color:var(--muted);text-decoration:none;
   border:1px solid var(--dim);padding:10px 20px;
   transition:all 0.3s;margin-top:8px;font-family:'Courier Prime',monospace;
@@ -158,7 +177,7 @@ body{
 .book-cover-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:var(--paper);text-align:center;padding:0 20px;line-height:1.2;position:relative;z-index:1}
 .book-cover-sub{font-size:8px;letter-spacing:0.4em;color:var(--muted);text-transform:uppercase;position:relative;z-index:1}
 .meta-table{margin-top:28px;display:flex;flex-direction:column;gap:0}
-.meta-row{display:flex;justify-content:space-between;font-size:9px;letter-spacing:0.2em;padding:10px 0;border-bottom:1px solid var(--dim)}
+.meta-row{display:flex;justify-content:space-between;font-size:11px;letter-spacing:0.2em;padding:10px 0;border-bottom:1px solid var(--dim)}
 .meta-row span:first-child{color:var(--muted)}
 .meta-row span:last-child{color:var(--paper)}
 
@@ -181,18 +200,18 @@ body{
 .gitem::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.45);transition:opacity 0.4s}
 .gitem:hover::after{opacity:0}
 .gitem-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:8px;letter-spacing:0.3em;color:var(--muted);text-transform:uppercase}
-.gallery-caption{text-align:center;font-size:9px;letter-spacing:0.3em;color:var(--muted);text-transform:uppercase;margin-top:24px}
+.gallery-caption{text-align:center;font-size:11px;letter-spacing:0.3em;color:var(--muted);text-transform:uppercase;margin-top:24px}
 
 /* RIDDLES */
-.riddle-intro{font-size:11px;line-height:1.9;color:var(--muted);margin-bottom:48px;text-align:center;max-width:500px;margin-left:auto;margin-right:auto}
+.riddle-intro{font-size:13px;line-height:1.9;color:var(--muted);margin-bottom:48px;text-align:center;max-width:500px;margin-left:auto;margin-right:auto}
 .riddle-block{border:1px solid var(--dim);padding:40px;margin-bottom:24px;position:relative;max-width:640px;margin-left:auto;margin-right:auto;transition:border-color 0.3s}
 .riddle-block:hover{border-color:var(--muted)}
 .riddle-num{position:absolute;top:-8px;left:20px;font-size:8px;letter-spacing:0.3em;color:var(--muted);background:var(--bg);padding:0 8px;text-transform:uppercase}
-.riddle-q{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;line-height:1.7;color:var(--paper);margin-bottom:24px}
-.riddle-input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--dim);color:var(--paper);font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:0.2em;padding:8px 0;outline:none;transition:border-color 0.3s}
+.riddle-q{font-family:'Playfair Display',serif;font-style:italic;font-size:17px;line-height:1.7;color:var(--paper);margin-bottom:24px}
+.riddle-input{width:100%;background:transparent;border:none;border-bottom:1px solid var(--dim);color:var(--paper);font-family:'Courier Prime',monospace;font-size:13px;letter-spacing:0.2em;padding:8px 0;outline:none;transition:border-color 0.3s}
 .riddle-input::placeholder{color:var(--dim)}
 .riddle-input:focus{border-color:var(--accent)}
-.riddle-feedback{display:none;margin-top:14px;font-size:9px;letter-spacing:0.25em;text-transform:uppercase}
+.riddle-feedback{display:none;margin-top:14px;font-size:11px;letter-spacing:0.25em;text-transform:uppercase}
 .riddle-feedback.show{display:block;color:var(--accent)}
 .riddle-feedback.wrong{display:block;color:#7a3535}
 
@@ -202,7 +221,7 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
 .footer-title{font-family:'Playfair Display',serif;font-size:24px;font-weight:900;font-style:italic;color:var(--paper)}
 .footer-sub{font-size:8px;letter-spacing:0.4em;color:var(--muted);text-transform:uppercase}
 .footer-links{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
-.footer-links a{font-size:9px;letter-spacing:0.3em;color:var(--muted);text-decoration:none;text-transform:uppercase;transition:color 0.3s}
+.footer-links a{font-size:11px;letter-spacing:0.3em;color:var(--muted);text-decoration:none;text-transform:uppercase;transition:color 0.3s}
 .footer-links a:hover{color:var(--paper)}
 .footer-copy{position:relative;z-index:10;text-align:center;font-size:8px;letter-spacing:0.3em;color:var(--dim);text-transform:uppercase;padding-bottom:40px}
 
@@ -437,6 +456,32 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
   </div>
 </div>
 
+<!-- ABOUT + STATS -->
+<div class="wrap">
+  <div class="rule" data-label="about" data-num="06"></div>
+  <div class="two-col reveal">
+    <div>
+      <h2 class="big-head">what is<br><em>this.</em></h2>
+      <p class="body-text">a 100-day project. texts written at 23:47, sketches drawn without reference, a game built from scratch, a book assembled from the silence between posts.</p>
+      <p class="body-text">no clear genre. no target audience. just something that needed to exist and found a way to.</p>
+      <p class="body-text">the countdown started. it will end. what happens at zero has been decided from the beginning.</p>
+    </div>
+    <div>
+      <div style="margin-bottom:32px;">
+        <p style="font-size:8px;letter-spacing:0.4em;color:var(--muted);text-transform:uppercase;margin-bottom:16px;">by the numbers</p>
+        <div class="meta-table">
+          <div class="meta-row"><span>peak views</span><span>60 — 70</span></div>
+          <div class="meta-row"><span>subscribers</span><span>7</span></div>
+          <div class="meta-row"><span>posts with reactions</span><span>every one</span></div>
+          <div class="meta-row"><span>nullchat messages</span><span>2</span></div>
+          <div class="meta-row"><span>sketches drawn</span><span>5+</span></div>
+          <div class="meta-row"><span>days remaining</span><span id="statsNum">36</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer class="reveal">
   <div class="footer-l">
@@ -637,6 +682,8 @@ function updateCountdown(){
   const diff=Math.max(0,Math.ceil((endDate-new Date())/(1000*60*60*24)));
   document.getElementById('heroNum').textContent=diff;
   document.getElementById('footerNum').textContent=diff;
+  const s=document.getElementById('statsNum');
+  if(s) s.textContent=diff;
 }
 updateCountdown();
 setInterval(updateCountdown,60000);
