@@ -336,11 +336,55 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
 .ls-btn:hover{color:var(--muted)}
 .ls-sep{font-size:8px;color:var(--dim);line-height:1.8;padding:0 2px}
 
+/* POSTS FEED */
+.posts-feed{display:flex;flex-direction:column;gap:48px;max-width:560px;margin:0 auto}
+.post-card{border-left:1px solid var(--dim);padding:0 0 0 24px;position:relative;transition:border-color 0.5s}
+.post-card:hover{border-color:var(--muted)}
+.post-date{font-size:8px;letter-spacing:0.4em;color:var(--dim);text-transform:uppercase;margin-bottom:12px}
+.post-body{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;line-height:2;color:var(--accent)}
+.post-body br{content:'';display:block;margin:4px 0}
+.post-remaining{font-size:9px;letter-spacing:0.3em;color:var(--dim);margin-top:14px;text-transform:lowercase}
+.posts-more{text-align:center;margin-top:40px}
+
+/* TIMELINE */
+.timeline{position:relative;max-width:600px;margin:0 auto;padding-left:32px}
+.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,var(--dim) 10%,var(--dim) 90%,transparent)}
+.tl-item{position:relative;padding:0 0 48px 0}
+.tl-item::before{content:'';position:absolute;left:-36px;top:4px;width:7px;height:7px;border-radius:50%;border:1px solid var(--dim);background:var(--bg);transition:all 0.4s}
+.tl-item:hover::before{border-color:var(--accent);background:var(--accent);box-shadow:0 0 8px rgba(200,192,176,0.3)}
+.tl-day{font-size:8px;letter-spacing:0.5em;color:var(--dim);text-transform:uppercase;margin-bottom:8px}
+.tl-text{font-family:'Playfair Display',serif;font-style:italic;font-size:14px;line-height:1.9;color:var(--muted)}
+.tl-text em{color:var(--accent);font-style:normal}
+
+/* BOOK PREVIEW */
+.book-preview{max-width:520px;margin:0 auto}
+.book-chapter{margin-bottom:48px;opacity:0.7;transition:opacity 0.5s}
+.book-chapter:hover{opacity:1}
+.book-ch-num{font-size:8px;letter-spacing:0.5em;color:var(--dim);text-transform:uppercase;margin-bottom:12px}
+.book-ch-title{font-family:'Playfair Display',serif;font-size:clamp(18px,3vw,26px);font-weight:700;color:var(--paper);margin-bottom:16px}
+.book-ch-title em{font-style:italic;color:var(--accent)}
+.book-ch-body{font-family:'Playfair Display',serif;font-style:italic;font-size:14px;line-height:2.2;color:var(--muted)}
+.book-ch-divider{width:40px;height:1px;background:var(--dim);margin:32px 0}
+
+/* GALLERY IMPROVED */
+.gitem-label{position:absolute;bottom:12px;left:12px;font-size:7px;letter-spacing:0.3em;color:var(--dim);text-transform:uppercase;z-index:2;opacity:0;transition:opacity 0.4s}
+.gitem:hover .gitem-label{opacity:1}
+.gitem-sketch{width:100%;height:100%;display:flex;align-items:center;justify-content:center;position:relative}
+.gitem-sketch svg{width:60%;height:60%;opacity:0.15;transition:opacity 0.4s}
+.gitem:hover .gitem-sketch svg{opacity:0.35}
+
+/* SECRET 4 — konami */
+#secret4 .secret-text{color:#c8a848}
+
 @media(max-width:700px){
   .two-col,.book-grid,.game-grid{grid-template-columns:1fr}
   .gallery{grid-template-columns:repeat(2,1fr)}
   footer{flex-direction:column;gap:24px;align-items:flex-start}
   .footer-links{align-items:flex-start}
+  .timeline{padding-left:24px}
+  .tl-item::before{left:-28px}
+  .posts-feed{gap:36px}
+  .post-card{padding-left:16px}
 }
 </style>
 </head>
@@ -349,6 +393,7 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
 <audio id="bgAudio" loop preload="none">
   <source src="Hozuki_-_oblivion.mp3" type="audio/mpeg">
 </audio>
+<div id="cursor" class="cursor"></div>
 <button id="audioBtn">♪ play</button>
 <canvas id="canvas"></canvas>
 <div class="noise"></div>
@@ -386,6 +431,12 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
 <div id="secret3" class="secret-overlay">
   <div class="secret-inner">
     <p class="secret-text">"she was never supposed to smile.<br><br>it just happened.<br><br>i left it because correcting it<br>would have been a kind of lie."</p>
+    <p class="secret-close">click anywhere to close</p>
+  </div>
+</div>
+<div id="secret4" class="secret-overlay">
+  <div class="secret-inner">
+    <p class="secret-text">"you scrolled past everything<br>and came back to the beginning.<br><br>that's not curiosity.<br>that's recognition.<br><br>you've been carrying<br>an unopened file too."</p>
     <p class="secret-close">click anywhere to close</p>
   </div>
 </div>
@@ -436,12 +487,83 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
   </div>
 </div>
 
+<!-- POSTS -->
+<div class="wrap">
+  <div class="rule t-rule" data-label-en="from the feed" data-label-ru="из ленты" data-label="from the feed" data-num="01.1"></div>
+  <div class="posts-feed reveal">
+    <div class="post-card">
+      <div class="post-date">day 69</div>
+      <div class="post-body">everyone was waiting for jokes.<br>i couldn't think of a single one.<br><br>the day passed like usual —<br>meaning it didn't really pass at all.</div>
+      <div class="post-remaining">remaining days: 32..?</div>
+    </div>
+    <div class="post-card">
+      <div class="post-date" id="tPostDate2">day 68</div>
+      <div class="post-body" id="tPostBody2">in a moment of anger,<br>we don't think about consequences.<br><br>we just want<br>the noise inside<br>to stop.<br><br>and sometimes<br>destroying something<br>feels like the fastest way.</div>
+      <div class="post-remaining">remaining days: 32</div>
+    </div>
+    <div class="post-card">
+      <div class="post-date" id="tPostDate3">day 67</div>
+      <div class="post-body" id="tPostBody3">a strange day for good news.<br><br>but that's exactly how it happens —<br>without warning,<br>at the worst possible moment,<br>when you've already stopped expecting anything.<br><br>one person.<br>not just a person.<br><br>sometimes that's enough<br>to make the day different.</div>
+      <div class="post-remaining">remaining days: 32</div>
+    </div>
+    <div class="post-card">
+      <div class="post-date" id="tPostDate4">day 75</div>
+      <div class="post-body" id="tPostBody4">some words don't disappear after you say them.<br><br>they just sit there,<br>in the space between two people,<br>and take up room<br>that used to belong to something else.<br><br>you can apologize.<br>you can mean it.<br><br>but the other person now knows<br>that those words exist inside you.</div>
+      <div class="post-remaining">remaining days: 26</div>
+    </div>
+    <div class="post-card">
+      <div class="post-date" id="tPostDate5">day 76</div>
+      <div class="post-body" id="tPostBody5">love is strange.<br><br>it doesn't announce itself.<br>it just slowly becomes<br>the thing you check first<br>when something happens.<br><br>good or bad —<br>you reach for the same person.</div>
+      <div class="post-remaining">remaining days: 25</div>
+    </div>
+    <div class="post-card">
+      <div class="post-date" id="tPostDate6">day 77</div>
+      <div class="post-body" id="tPostBody6">people talk about love<br>like it's soft.<br><br>and sometimes it is.<br><br>but mostly it's the thing<br>that makes you get up<br>when you had no reason to.<br><br>it just keeps being there.<br>and that —<br>that specific thing —<br>is the strongest force<br>i've ever felt.</div>
+      <div class="post-remaining">remaining days: 25</div>
+    </div>
+  </div>
+  <div class="posts-more"><a href="https://t.me/maybe0x16" target="_blank" class="btn" id="tPostsMore">read all posts →</a></div>
+</div>
+
+<!-- TIMELINE -->
+<div class="wrap">
+  <div class="rule t-rule" data-label-en="timeline" data-label-ru="хронология" data-label="timeline" data-num="01.2"></div>
+  <h2 class="big-head reveal" id="tTlHead">how we<br><em>got here.</em></h2>
+  <div class="timeline reveal">
+    <div class="tl-item">
+      <div class="tl-day" id="tTlDay1">day 100</div>
+      <div class="tl-text" id="tTlText1">the countdown begins. no plan. no audience. just a number <em>and a feeling</em> that something needed to exist.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-day" id="tTlDay2">day 85</div>
+      <div class="tl-text" id="tTlText2">first sketch drawn. pencil on paper. <em>she was smiling.</em> nobody asked why.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-day" id="tTlDay3">day 70</div>
+      <div class="tl-text" id="tTlText3">the game takes shape. dark rooms. isometric tiles. <em>enemies with red eyes.</em> no instructions.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-day" id="tTlDay4">day 50</div>
+      <div class="tl-text" id="tTlText4">the pause. the countdown froze at 32. <em>not the project — just me.</em> needed more time.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-day" id="tTlDay5">day 32</div>
+      <div class="tl-text" id="tTlText5">resumed. texts every night at 23:47. <em>the book started writing itself</em> in between the posts.</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-day" id="tTlDay6">now</div>
+      <div class="tl-text" id="tTlText6">everything converges. the site, the game, the book. <em>day zero is close.</em></div>
+    </div>
+  </div>
+</div>
+
 <!-- BOOK -->
 <div class="wrap">
   <div class="rule t-rule" data-label-en="the something" data-label-ru="нечто" data-label="the something" data-num="02"></div>
   <div class="book-grid reveal">
     <div class="book-cover">
-      <div class="book-cover-sub" style="opacity:0.3;">soon...</div>
+      <div class="book-cover-title">not<br>a void</div>
+      <div class="book-cover-sub" style="opacity:0.5;">100 days · collected</div>
     </div>
     <div>
       <h2 class="big-head" id="tBookHead">100 days.<br><em>something at the end.</em></h2>
@@ -453,6 +575,26 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
         <div class="meta-row"><span id="tBookReleaseL">release</span><span id="tBookRelease">day 00</span></div>
         <div class="meta-row"><span id="tBookLangL">language</span><span id="tBookLang">en / ru</span></div>
       </div>
+    </div>
+  </div>
+  <!-- book preview chapters -->
+  <div class="book-preview reveal" style="margin-top:64px;">
+    <div class="book-chapter">
+      <div class="book-ch-num" id="tBookCh1Num">chapter i</div>
+      <div class="book-ch-title" id="tBookCh1Title">the <em>weight</em> of unsent things</div>
+      <div class="book-ch-body" id="tBookCh1Body">there's a draft folder inside every person.<br>messages you wrote at 3am and never sent.<br>apologies that arrived too late to matter.<br>confessions that would have changed everything<br>if they had been spoken out loud.<br><br>you carry them like stones in your coat pockets.<br>and after a while you forget they're there.<br>you just think you've always been this heavy.</div>
+    </div>
+    <div class="book-ch-divider"></div>
+    <div class="book-chapter">
+      <div class="book-ch-num" id="tBookCh2Num">chapter ii</div>
+      <div class="book-ch-title" id="tBookCh2Title">the <em>architecture</em> of pretending</div>
+      <div class="book-ch-body" id="tBookCh2Body">you learn early which version of yourself<br>gets invited back.<br><br>the funny one. the stable one.<br>the one who doesn't need too much.<br><br>and you get so good at performing it<br>that one day you forget<br>which one was the original.</div>
+    </div>
+    <div class="book-ch-divider"></div>
+    <div class="book-chapter">
+      <div class="book-ch-num" id="tBookCh3Num">chapter iii</div>
+      <div class="book-ch-title" id="tBookCh3Title"><em>23:47</em></div>
+      <div class="book-ch-body" id="tBookCh3Body">there's a specific minute of the day<br>when everything you've been ignoring<br>catches up.<br><br>for me it's 23:47.<br><br>that's when the noise stops<br>and the room gets honest.</div>
     </div>
   </div>
 </div>
@@ -490,12 +632,29 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
 <div class="wrap">
   <div class="rule t-rule" data-label-en="sketches" data-label-ru="скетчи" data-label="sketches" data-num="04"></div>
   <div class="gallery reveal">
-    <div class="gitem"><div class="gitem-inner">soon...</div></div>
-    <div class="gitem"><div class="gitem-inner">soon...</div></div>
-    <div class="gitem"><div class="gitem-inner">soon...</div></div>
-    <div class="gitem"><div class="gitem-inner">soon...</div></div>
-    <div class="gitem"><div class="gitem-inner">soon...</div></div>
-    <div class="gitem"><div class="gitem-inner">soon...</div></div>
+    <div class="gitem">
+      <div class="gitem-sketch"><svg viewBox="0 0 60 80"><circle cx="30" cy="25" r="12" fill="none" stroke="#3a3830" stroke-width="0.8"/><line x1="30" y1="37" x2="30" y2="58" stroke="#3a3830" stroke-width="0.8"/><line x1="30" y1="45" x2="20" y2="52" stroke="#3a3830" stroke-width="0.8"/><line x1="30" y1="45" x2="40" y2="52" stroke="#3a3830" stroke-width="0.8"/></svg></div>
+      <div class="gitem-label" id="tGal1">sketch 01 — she was smiling</div>
+    </div>
+    <div class="gitem">
+      <div class="gitem-sketch"><svg viewBox="0 0 60 80"><circle cx="30" cy="25" r="12" fill="none" stroke="#3a3830" stroke-width="0.8"/><line x1="30" y1="37" x2="30" y2="58" stroke="#3a3830" stroke-width="0.8"/><line x1="22" y1="21" x2="26" y2="23" stroke="#3a3830" stroke-width="0.6"/><line x1="38" y1="21" x2="34" y2="23" stroke="#3a3830" stroke-width="0.6"/></svg></div>
+      <div class="gitem-label" id="tGal2">sketch 02 — she was not</div>
+    </div>
+    <div class="gitem">
+      <div class="gitem-sketch"><svg viewBox="0 0 60 80"><rect x="15" y="15" width="30" height="50" rx="2" fill="none" stroke="#3a3830" stroke-width="0.8"/><line x1="20" y1="25" x2="40" y2="25" stroke="#3a3830" stroke-width="0.4" opacity="0.5"/><line x1="20" y1="30" x2="35" y2="30" stroke="#3a3830" stroke-width="0.4" opacity="0.5"/><line x1="20" y1="35" x2="38" y2="35" stroke="#3a3830" stroke-width="0.4" opacity="0.5"/></svg></div>
+      <div class="gitem-label" id="tGal3">sketch 03 — the unopened file</div>
+    </div>
+    <div class="gitem">
+      <div class="gitem-sketch"><svg viewBox="0 0 60 80"><path d="M10 65 Q20 20, 30 40 Q40 60, 50 15" fill="none" stroke="#3a3830" stroke-width="0.8"/></svg></div>
+      <div class="gitem-label" id="tGal4">sketch 04 — the signal</div>
+    </div>
+    <div class="gitem">
+      <div class="gitem-sketch"><svg viewBox="0 0 60 80"><circle cx="30" cy="40" r="18" fill="none" stroke="#3a3830" stroke-width="0.8"/><circle cx="30" cy="40" r="3" fill="#3a3830" opacity="0.3"/></svg></div>
+      <div class="gitem-label" id="tGal5">sketch 05 — the void</div>
+    </div>
+    <div class="gitem">
+      <div class="gitem-inner" style="color:var(--dim);opacity:0.3;font-size:7px;">day zero</div>
+    </div>
   </div>
   <p class="gallery-caption" id="tSketchesCaption">hand-drawn. pencil. no reference.</p>
 </div>
@@ -622,6 +781,17 @@ const TEXTS = {
     'ch-link': '@maybe0x16',
     'personal-link': '@eterytyy_blog',
     'close-secret': 'click anywhere to close',
+    'posts-more': 'read all posts →',
+    'tl-head': 'how we<br><em>got here.</em>',
+    'tl-day1': 'day 100', 'tl-text1': 'the countdown begins. no plan. no audience. just a number <em>and a feeling</em> that something needed to exist.',
+    'tl-day2': 'day 85', 'tl-text2': 'first sketch drawn. pencil on paper. <em>she was smiling.</em> nobody asked why.',
+    'tl-day3': 'day 70', 'tl-text3': 'the game takes shape. dark rooms. isometric tiles. <em>enemies with red eyes.</em> no instructions.',
+    'tl-day4': 'day 50', 'tl-text4': 'the pause. the countdown froze at 32. <em>not the project — just me.</em> needed more time.',
+    'tl-day5': 'day 32', 'tl-text5': 'resumed. texts every night at 23:47. <em>the book started writing itself</em> in between the posts.',
+    'tl-day6': 'now', 'tl-text6': 'everything converges. the site, the game, the book. <em>day zero is close.</em>',
+    'book-ch1-num': 'chapter i', 'book-ch1-title': 'the <em>weight</em> of unsent things',
+    'book-ch2-num': 'chapter ii', 'book-ch2-title': 'the <em>architecture</em> of pretending',
+    'book-ch3-num': 'chapter iii', 'book-ch3-title': '<em>23:47</em>',
   },
   ru: {
     'hero-counter-label': 'осталось дней',
@@ -675,6 +845,17 @@ const TEXTS = {
     'ch-link': '@maybe0x16',
     'personal-link': '@eterytyy_blog',
     'close-secret': 'нажмите где угодно чтобы закрыть',
+    'posts-more': 'все посты →',
+    'tl-head': 'как мы<br><em>оказались здесь.</em>',
+    'tl-day1': 'день 100', 'tl-text1': 'отсчёт начинается. без плана. без аудитории. просто число <em>и ощущение</em>, что чему-то нужно существовать.',
+    'tl-day2': 'день 85', 'tl-text2': 'первый скетч. карандаш по бумаге. <em>она улыбалась.</em> никто не спрашивал почему.',
+    'tl-day3': 'день 70', 'tl-text3': 'игра обретает форму. тёмные комнаты. изометрия. <em>враги с красными глазами.</em> без инструкций.',
+    'tl-day4': 'день 50', 'tl-text4': 'пауза. отсчёт замер на 32. <em>не проект — просто я.</em> нужно было больше времени.',
+    'tl-day5': 'день 32', 'tl-text5': 'продолжение. тексты каждую ночь в 23:47. <em>книга начала писать себя сама</em> между постами.',
+    'tl-day6': 'сейчас', 'tl-text6': 'всё сходится. сайт, игра, книга. <em>день ноль близко.</em>',
+    'book-ch1-num': 'глава i', 'book-ch1-title': '<em>тяжесть</em> неотправленного',
+    'book-ch2-num': 'глава ii', 'book-ch2-title': '<em>архитектура</em> притворства',
+    'book-ch3-num': 'глава iii', 'book-ch3-title': '<em>23:47</em>',
   }
 };
 
@@ -798,6 +979,17 @@ function applyLang(lang) {
       'tFooterCopy': t['footer-copy'],
       'tChLink': t['ch-link'],
       'tPersonalLink': t['personal-link'],
+      'tPostsMore': t['posts-more'],
+      'tTlHead': t['tl-head'],
+      'tTlDay1': t['tl-day1'], 'tTlText1': t['tl-text1'],
+      'tTlDay2': t['tl-day2'], 'tTlText2': t['tl-text2'],
+      'tTlDay3': t['tl-day3'], 'tTlText3': t['tl-text3'],
+      'tTlDay4': t['tl-day4'], 'tTlText4': t['tl-text4'],
+      'tTlDay5': t['tl-day5'], 'tTlText5': t['tl-text5'],
+      'tTlDay6': t['tl-day6'], 'tTlText6': t['tl-text6'],
+      'tBookCh1Num': t['book-ch1-num'], 'tBookCh1Title': t['book-ch1-title'],
+      'tBookCh2Num': t['book-ch2-num'], 'tBookCh2Title': t['book-ch2-title'],
+      'tBookCh3Num': t['book-ch3-num'], 'tBookCh3Title': t['book-ch3-title'],
     };
 
     Object.entries(map).forEach(([id, val]) => {
@@ -1030,7 +1222,7 @@ document.addEventListener('touchmove',e=>{ const t=e.touches[0]; mouseX=t.client
 document.addEventListener('touchend',()=>{ mouseX=-999; mouseY=-999; gameBlur.style.backdropFilter='blur(22px)'; gameHint.style.opacity=1; });
 
 // countdown
-const endDate=new Date('2026-04-25T23:47:00');
+const endDate=new Date('2026-05-29T23:47:00');
 function updateCountdown(){
   const diff=Math.max(0,Math.ceil((endDate-new Date())/(1000*60*60*24)));
   document.getElementById('heroNum').textContent=diff;
@@ -1084,6 +1276,27 @@ document.getElementById('probNothing').addEventListener('click',()=>{
 
 // secret 3 — точка после "something started"
 document.getElementById('dot').addEventListener('click',()=>showSecret('secret3'));
+
+// secret 4 — scroll to bottom then back to top (full journey x2)
+let s4LastY=0, s4Dir=0, s4HitBottom=false, s4Count=0, s4Timer;
+window.addEventListener('scroll',()=>{
+  const y=window.scrollY;
+  const maxY=document.body.scrollHeight-window.innerHeight;
+  const newDir=y>s4LastY?1:-1;
+  if(newDir!==s4Dir){
+    s4Dir=newDir;
+    // hit bottom
+    if(newDir===-1 && y>maxY*0.9) s4HitBottom=true;
+    // back to top after hitting bottom
+    if(newDir===1 && y<maxY*0.1 && s4HitBottom){
+      s4HitBottom=false; s4Count++;
+      clearTimeout(s4Timer);
+      s4Timer=setTimeout(()=>{ s4Count=0; },8000);
+      if(s4Count>=2){ s4Count=0; showSecret('secret4'); }
+    }
+  }
+  s4LastY=y;
+});
 
 // riddles
 const riddles=[
