@@ -1991,15 +1991,32 @@ function startGame() {
 // ── SPLASH → INTRO → GAME ──
 const splashEl  = document.getElementById('splash');
 const devDotEl  = document.getElementById('dev-dot');
- 
+const RELEASE   = new Date('2026-05-29T23:47:00');
+
 function hideSplash() {
   splashEl.style.transition = 'opacity .6s ease';
   splashEl.style.opacity = '0';
   setTimeout(() => { splashEl.style.display = 'none'; }, 650);
 }
- 
-// тап по сплэшу — ничего не делает, это публичная страница
-// доступ только через dev-dot
+
+// обновляем countdown на сплэше
+const splashSoon = document.getElementById('splash-soon');
+(function updateSplashTimer() {
+  const now  = new Date();
+  const diff = RELEASE - now;
+  if (diff <= 0) {
+    // время пришло — разблокируем тап по сплэшу
+    if(splashSoon) splashSoon.textContent = '29.05 · 23:47';
+    splashEl.addEventListener('click', hideSplash, {once: true});
+    splashEl.addEventListener('touchend', e => { e.preventDefault(); hideSplash(); }, {once: true, passive: false});
+    return;
+  }
+  const h = Math.floor(diff/3600000);
+  const m = Math.floor((diff%3600000)/60000);
+  const s = Math.floor((diff%60000)/1000);
+  if(splashSoon) splashSoon.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  setTimeout(updateSplashTimer, 1000);
+})();
  
 // dev-dot — скрытая точка, скипает сразу в игру
 // ── dev password UI ──

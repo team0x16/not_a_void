@@ -373,8 +373,32 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
 .gitem-sketch svg{width:60%;height:60%;opacity:0.15;transition:opacity 0.4s}
 .gitem:hover .gitem-sketch svg{opacity:0.35}
 
-/* SECRET 4 — konami */
-#secret4 .secret-text{color:#c8a848}
+/* MOOD GRID */
+.mood-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--dim)}
+.mood-card{background:var(--bg);padding:28px 24px;position:relative;overflow:hidden;transition:background 0.4s}
+.mood-card:hover{background:#13121a}
+.mood-card--large{grid-column:span 2}
+.mood-quote{font-family:'Playfair Display',serif;font-style:italic;font-size:14px;line-height:1.9;color:var(--muted);transition:color 0.4s}
+.mood-card:hover .mood-quote{color:var(--accent)}
+.mood-src{font-size:7px;letter-spacing:0.4em;color:var(--dim);text-transform:uppercase;margin-top:12px}
+
+/* MANIFESTO */
+.manifesto{max-width:480px;margin:0 auto;padding:24px 0}
+.manifesto-line{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(16px,2.5vw,22px);line-height:2;color:var(--muted);margin-bottom:8px;opacity:0;transform:translateY(12px);transition:opacity 0.8s ease,transform 0.8s ease}
+.manifesto-line--gap{margin-top:32px;margin-bottom:32px}
+.manifesto-line--accent{color:var(--accent);font-size:clamp(18px,3vw,26px);margin-top:32px}
+.manifesto.visible .manifesto-line:nth-child(1){opacity:1;transform:none;transition-delay:0.1s}
+.manifesto.visible .manifesto-line:nth-child(2){opacity:1;transform:none;transition-delay:0.3s}
+.manifesto.visible .manifesto-line:nth-child(3){opacity:1;transform:none;transition-delay:0.5s}
+.manifesto.visible .manifesto-line:nth-child(4){opacity:1;transform:none;transition-delay:0.7s}
+.manifesto.visible .manifesto-line:nth-child(5){opacity:1;transform:none;transition-delay:0.9s}
+.manifesto.visible .manifesto-line:nth-child(6){opacity:1;transform:none;transition-delay:1.1s}
+.manifesto.visible .manifesto-line:nth-child(7){opacity:1;transform:none;transition-delay:1.4s}
+
+@media(max-width:700px){
+  .mood-grid{grid-template-columns:1fr}
+  .mood-card--large{grid-column:span 1}
+}
 
 @media(max-width:700px){
   .two-col,.book-grid,.game-grid{grid-template-columns:1fr}
@@ -385,6 +409,9 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
   .tl-item::before{left:-28px}
   .posts-feed{gap:36px}
   .post-card{padding-left:16px}
+  .mood-grid{grid-template-columns:1fr}
+  .mood-card--large{grid-column:span 1}
+  .manifesto{padding:16px 0}
 }
 </style>
 </head>
@@ -520,6 +547,16 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
       <div class="post-date" id="tPostDate6">day 77</div>
       <div class="post-body" id="tPostBody6">people talk about love<br>like it's soft.<br><br>and sometimes it is.<br><br>but mostly it's the thing<br>that makes you get up<br>when you had no reason to.<br><br>it just keeps being there.<br>and that —<br>that specific thing —<br>is the strongest force<br>i've ever felt.</div>
       <div class="post-remaining">remaining days: 25</div>
+    </div>
+    <div class="post-card">
+      <div class="post-date">day 78</div>
+      <div class="post-body">saying no feels like a door closing.<br><br>so you say yes.<br>and yes.<br>and yes again.<br><br>not because you want to —<br>but because somewhere along the way<br>you decided<br>that your discomfort<br>is easier to carry<br>than someone else's disappointment.<br><br>the yes people aren't weak.<br>they just learned early<br>that keeping the peace<br>costs less<br>when you're the one paying.<br><br>they've been doing it so long<br>they forgot<br>they had a choice.<br><br>—<br><br>the project continues.</div>
+      <div class="post-remaining">remaining days: 11</div>
+    </div>
+    <div class="post-card">
+      <div class="post-date">day 79</div>
+      <div class="post-body">some days just work.<br><br>not because anything big happened.<br>not because the problems disappeared.<br><br>just —<br>everything sat right.<br>the weight was the same<br>but somehow easier to carry.<br><br>those days are rare enough<br>that you notice them.<br>you stop for a second<br>and think:<br>this is it.<br>this is what it's supposed to feel like.<br><br>one person.<br>the right conversation.<br>a moment that didn't need<br>to be anything more<br>than what it was.<br><br>and for once<br>you weren't waiting for it to end.</div>
+      <div class="post-remaining">remaining days: 8</div>
     </div>
   </div>
   <div class="posts-more"><a href="https://t.me/maybe0x16" target="_blank" class="btn" id="tPostsMore">read all posts →</a></div>
@@ -659,6 +696,37 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
   <p class="gallery-caption" id="tSketchesCaption">hand-drawn. pencil. no reference.</p>
 </div>
 
+<!-- MOOD -->
+<div class="wrap">
+  <div class="rule t-rule" data-label-en="fragments" data-label-ru="фрагменты" data-label="fragments" data-num="04.1"></div>
+  <div class="mood-grid reveal">
+    <div class="mood-card mood-card--large">
+      <div class="mood-quote">"i'm tired. not from exhaustion,<br>but from feeling nothing in particular."</div>
+      <div class="mood-src">— day 69</div>
+    </div>
+    <div class="mood-card">
+      <div class="mood-quote">"the kindest people eventually go quiet."</div>
+      <div class="mood-src">— march 2026</div>
+    </div>
+    <div class="mood-card">
+      <div class="mood-quote">"some things are not meant to be finished."</div>
+      <div class="mood-src">— march 2026</div>
+    </div>
+    <div class="mood-card mood-card--large">
+      <div class="mood-quote">"love is the thing that makes you get up<br>when you had no reason to."</div>
+      <div class="mood-src">— day 77</div>
+    </div>
+    <div class="mood-card">
+      <div class="mood-quote">"the noise inside<br>needed to stop."</div>
+      <div class="mood-src">— day 68</div>
+    </div>
+    <div class="mood-card">
+      <div class="mood-quote">"this is what it's supposed to feel like."</div>
+      <div class="mood-src">— day 79</div>
+    </div>
+  </div>
+</div>
+
 <!-- RIDDLES -->
 <div class="wrap">
   <div class="rule t-rule" data-label-en="for the attentive" data-label-ru="для внимательных" data-label="for the attentive" data-num="05"></div>
@@ -693,6 +761,20 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
       <p class="body-text" id="tAboutBody2">texts at 23:47. sketches without reference. a game built in the dark. something written between the posts that wasn't supposed to be read yet.</p>
       <p class="body-text" id="tAboutBody3">no genre. no audience in mind. just a countdown and everything that filled it.</p>
       <p class="body-text" id="tAboutBody4">what's in between — you've already seen part of it.</p>
+      <div class="progress-wrap" style="margin-top:32px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+          <span style="font-size:8px;letter-spacing:0.4em;color:var(--dim);text-transform:uppercase;" id="tProgressLabel">progress</span>
+          <span style="font-size:8px;letter-spacing:0.2em;color:var(--muted);" id="progressPct">92%</span>
+        </div>
+        <div style="width:100%;height:1px;background:var(--dim);position:relative;">
+          <div id="progressBar" style="height:1px;background:var(--accent);width:92%;transition:width 1.5s ease;"></div>
+          <div style="position:absolute;right:0;top:-3px;width:7px;height:7px;border-radius:50%;border:1px solid var(--accent);background:var(--bg);transform:translateX(50%);"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;">
+          <span style="font-size:7px;letter-spacing:0.3em;color:var(--dim);">day 100</span>
+          <span style="font-size:7px;letter-spacing:0.3em;color:var(--dim);">day 00</span>
+        </div>
+      </div>
     </div>
     <div>
       <div style="margin-bottom:32px;">
@@ -703,10 +785,26 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
           <div class="meta-row"><span id="tStatReactions">posts with reactions</span><span>every one</span></div>
           <div class="meta-row"><span id="tStatNullchat">nullchat messages</span><span>2</span></div>
           <div class="meta-row"><span id="tStatSketches">sketches drawn</span><span>5+</span></div>
-          <div class="meta-row"><span id="tStatDays">days remaining</span><span id="statsNum">34</span></div>
+          <div class="meta-row"><span>posts written</span><span>79</span></div>
+          <div class="meta-row"><span>words written</span><span>~4 200</span></div>
+          <div class="meta-row"><span id="tStatDays">days remaining</span><span id="statsNum">8</span></div>
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- MANIFESTO -->
+<div class="wrap">
+  <div class="rule t-rule" data-label-en="why" data-label-ru="зачем" data-label="why" data-num="07"></div>
+  <div class="manifesto reveal">
+    <p class="manifesto-line" id="tMf1">this started as a countdown.</p>
+    <p class="manifesto-line" id="tMf2">it became a habit.</p>
+    <p class="manifesto-line" id="tMf3">then something that existed on its own terms.</p>
+    <p class="manifesto-line manifesto-line--gap" id="tMf4">23:47 every night.<br>not because it had to be that time.<br>just because that's when the noise stopped.</p>
+    <p class="manifesto-line" id="tMf5">no audience was assumed.<br>no reception was expected.</p>
+    <p class="manifesto-line manifesto-line--gap" id="tMf6">and yet — you're here.</p>
+    <p class="manifesto-line manifesto-line--accent" id="tMf7">day zero is not an ending.<br>it's a timestamp.</p>
   </div>
 </div>
 
@@ -719,8 +817,8 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
   <div class="footer-links">
     <a href="https://t.me/maybe0x16" target="_blank" id="tChLink">channel @maybe0x16</a>
     <a href="https://t.me/eterytyy_blog" target="_blank" id="tPersonalLink">personal @eterytyy_blog</a>
-    <a href="https://t.me/nullchat0x16_bot" target="_blank">nullchat</a>
-    <a href="https://t.me/sentinel0x16_bot" target="_blank">sentinel</a>
+    <a href="book.html" id="tBookLink">the book →</a>
+    <a href="game.html" id="tGameLink">the game →</a>
   </div>
 </footer>
 <p class="footer-copy">remaining days: <span id="footerNum">34</span> — <span id="tFooterCopy">day zero is coming</span></p>
@@ -778,6 +876,8 @@ const TEXTS = {
     'stat-days': 'days left, probably',
     'footer-sub': 'probably nothing',
     'footer-copy': 'day zero is coming. or it isn\'t.',
+    'book-link': 'the book →',
+    'game-link': 'the game →',
     'ch-link': '@maybe0x16',
     'personal-link': '@eterytyy_blog',
     'close-secret': 'click anywhere to close',
@@ -792,6 +892,14 @@ const TEXTS = {
     'book-ch1-num': 'chapter i', 'book-ch1-title': 'the <em>weight</em> of unsent things',
     'book-ch2-num': 'chapter ii', 'book-ch2-title': 'the <em>architecture</em> of pretending',
     'book-ch3-num': 'chapter iii', 'book-ch3-title': '<em>23:47</em>',
+    'progress-label': 'progress',
+    'mf1': 'this started as a countdown.',
+    'mf2': 'it became a habit.',
+    'mf3': 'then something that existed on its own terms.',
+    'mf4': '23:47 every night.<br>not because it had to be that time.<br>just because that\'s when the noise stopped.',
+    'mf5': 'no audience was assumed.<br>no reception was expected.',
+    'mf6': 'and yet — you\'re here.',
+    'mf7': 'day zero is not an ending.<br>it\'s a timestamp.',
   },
   ru: {
     'hero-counter-label': 'осталось дней',
@@ -842,6 +950,8 @@ const TEXTS = {
     'stat-days': 'дней осталось, наверное',
     'footer-sub': 'наверное ничего',
     'footer-copy': 'день ноль приближается. или нет.',
+    'book-link': 'книга →',
+    'game-link': 'игра →',
     'ch-link': '@maybe0x16',
     'personal-link': '@eterytyy_blog',
     'close-secret': 'нажмите где угодно чтобы закрыть',
@@ -856,6 +966,14 @@ const TEXTS = {
     'book-ch1-num': 'глава i', 'book-ch1-title': '<em>тяжесть</em> неотправленного',
     'book-ch2-num': 'глава ii', 'book-ch2-title': '<em>архитектура</em> притворства',
     'book-ch3-num': 'глава iii', 'book-ch3-title': '<em>23:47</em>',
+    'progress-label': 'прогресс',
+    'mf1': 'это началось как обратный отсчёт.',
+    'mf2': 'стало привычкой.',
+    'mf3': 'потом чем-то, что существует само по себе.',
+    'mf4': '23:47 каждую ночь.<br>не потому что так надо.<br>просто в это время замолкает шум.',
+    'mf5': 'аудитория не предполагалась.<br>реакция не ожидалась.',
+    'mf6': 'и всё же — ты здесь.',
+    'mf7': 'день ноль — не конец.<br>это временная метка.',
   }
 };
 
@@ -977,6 +1095,8 @@ function applyLang(lang) {
       'tStatDays': t['stat-days'],
       'probNothing': t['footer-sub'],
       'tFooterCopy': t['footer-copy'],
+      'tBookLink': t['book-link'],
+      'tGameLink': t['game-link'],
       'tChLink': t['ch-link'],
       'tPersonalLink': t['personal-link'],
       'tPostsMore': t['posts-more'],
@@ -990,6 +1110,9 @@ function applyLang(lang) {
       'tBookCh1Num': t['book-ch1-num'], 'tBookCh1Title': t['book-ch1-title'],
       'tBookCh2Num': t['book-ch2-num'], 'tBookCh2Title': t['book-ch2-title'],
       'tBookCh3Num': t['book-ch3-num'], 'tBookCh3Title': t['book-ch3-title'],
+      'tProgressLabel': t['progress-label'],
+      'tMf1': t['mf1'], 'tMf2': t['mf2'], 'tMf3': t['mf3'],
+      'tMf4': t['mf4'], 'tMf5': t['mf5'], 'tMf6': t['mf6'], 'tMf7': t['mf7'],
     };
 
     Object.entries(map).forEach(([id, val]) => {
@@ -1221,8 +1344,66 @@ document.addEventListener('mousemove',e=>{ mouseX=e.clientX; mouseY=e.clientY; u
 document.addEventListener('touchmove',e=>{ const t=e.touches[0]; mouseX=t.clientX; mouseY=t.clientY; updateBlur(); },{passive:true});
 document.addEventListener('touchend',()=>{ mouseX=-999; mouseY=-999; gameBlur.style.backdropFilter='blur(22px)'; gameHint.style.opacity=1; });
 
-// countdown
-const endDate=new Date('2026-05-29T23:47:00');
+// progress bar animate on scroll
+const endDate = new Date('2026-05-29T23:47:00');
+
+// lock book/game до 23:47 29 мая
+(function checkRelease() {
+  const now = new Date();
+  const released = now >= endDate;
+  const bookLink = document.getElementById('tBookLink');
+  const gameBtn  = document.getElementById('tGameBtn');
+  const gameLink = document.getElementById('tGameLink');
+  if (!released) {
+    const diff = endDate - now;
+    const h = Math.floor(diff/3600000);
+    const m = Math.floor((diff%3600000)/60000);
+    const s = Math.floor((diff%60000)/1000);
+    const cd = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(bookLink){ bookLink.style.pointerEvents='none'; bookLink.style.opacity='0.25'; bookLink.textContent=`book — ${cd}`; }
+    if(gameBtn) { gameBtn.style.pointerEvents='none';  gameBtn.style.opacity='0.25';  gameBtn.textContent=cd; }
+    if(gameLink){ gameLink.style.pointerEvents='none'; gameLink.style.opacity='0.25'; gameLink.textContent=`game — ${cd}`; }
+    setTimeout(checkRelease, 1000);
+  } else {
+    if(bookLink){ bookLink.style.pointerEvents=''; bookLink.style.opacity=''; bookLink.textContent='the book →'; }
+    if(gameBtn) { gameBtn.style.pointerEvents='';  gameBtn.style.opacity='';  gameBtn.textContent='play →'; }
+    if(gameLink){ gameLink.style.pointerEvents=''; gameLink.style.opacity=''; gameLink.textContent='the game →'; }
+  }
+})();
+const progressBar = document.getElementById('progressBar');
+const progressPct = document.getElementById('progressPct');
+if(progressBar) {
+  const startDate = new Date('2026-02-18T23:47:00'); // day 100
+  const total = endDate - startDate;
+  const elapsed = new Date() - startDate;
+  const pct = Math.min(100, Math.max(0, Math.round(elapsed/total*100)));
+  const pctObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting) {
+        progressBar.style.width = pct + '%';
+        if(progressPct) progressPct.textContent = pct + '%';
+        pctObs.unobserve(e.target);
+      }
+    });
+  }, {threshold: 0.5});
+  pctObs.observe(progressBar.parentElement);
+  progressBar.style.width = '0%';
+}
+
+// typewriter для hero
+const heroSub = document.getElementById('tHeroSub');
+function typewrite(el, text, speed=60) {
+  el.textContent = '';
+  let i = 0;
+  const t = setInterval(() => {
+    el.textContent += text[i++];
+    if(i >= text.length) clearInterval(t);
+  }, speed);
+}
+setTimeout(() => {
+  if(heroSub && currentLang === 'en') typewrite(heroSub, 'or maybe not');
+  else if(heroSub) typewrite(heroSub, 'или нет');
+}, 1200);
 function updateCountdown(){
   const diff=Math.max(0,Math.ceil((endDate-new Date())/(1000*60*60*24)));
   document.getElementById('heroNum').textContent=diff;
