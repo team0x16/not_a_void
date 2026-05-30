@@ -1994,6 +1994,9 @@ const devDotEl  = document.getElementById('dev-dot');
 const RELEASE   = new Date('2026-05-29T23:47:00');
 
 function hideSplash() {
+  const el = document.documentElement;
+  if(el.requestFullscreen) el.requestFullscreen().catch(()=>{});
+  else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
   splashEl.style.transition = 'opacity .6s ease';
   splashEl.style.opacity = '0';
   setTimeout(() => { splashEl.style.display = 'none'; }, 650);
@@ -2030,6 +2033,10 @@ function enterGame() {
   setTimeout(() => { devPwEl.classList.remove('on'); devPwEl.style.opacity=''; }, 500);
   splashEl.style.display = 'none';
   intro.style.display    = 'none';
+  // fullscreen
+  const el = document.documentElement;
+  if(el.requestFullscreen) el.requestFullscreen().catch(()=>{});
+  else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
   loadLevel(0);
   hud.style.opacity = '1';
   irisOpen(() => { gameOn = true; });

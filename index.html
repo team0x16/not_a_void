@@ -634,6 +634,9 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
       <div class="book-ch-body" id="tBookCh3Body">there's a specific minute of the day<br>when everything you've been ignoring<br>catches up.<br><br>for me it's 23:47.<br><br>that's when the noise stops<br>and the room gets honest.</div>
     </div>
   </div>
+  <div style="text-align:center;margin-top:48px;" class="reveal">
+    <a href="book.html" class="btn" id="tReadBook">read the book →</a>
+  </div>
 </div>
 
 <!-- GAME -->
@@ -823,6 +826,14 @@ footer{position:relative;z-index:10;padding:60px 40px;max-width:960px;margin:0 a
 </footer>
 <p class="footer-copy">remaining days: <span id="footerNum">34</span> — <span id="tFooterCopy">day zero is coming</span></p>
 
+
+  <p style="font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:0.5em;color:#3a3830;text-transform:uppercase;margin-bottom:80px;">30.05.2026 · 00:00 msk</p>
+  <div style="position:absolute;bottom:48px;display:flex;flex-direction:column;align-items:center;gap:10px;">
+    <input id="releaseInput" type="text" placeholder="devcode" style="background:none;border:none;border-bottom:1px solid #2a2720;color:#5a554a;font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:0.4em;text-align:center;width:140px;padding:8px 0;outline:none;caret-color:#5a554a;">
+    <p id="releaseErr" style="font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:0.4em;color:#6b2020;opacity:0;transition:opacity 0.3s;">wrong</p>
+  </div>
+</div>
+
 <script>
 // language
 let playing = false;
@@ -878,6 +889,7 @@ const TEXTS = {
     'footer-copy': 'day zero is coming. or it isn\'t.',
     'book-link': 'the book →',
     'game-link': 'the game →',
+    'read-book': 'read the book →',
     'ch-link': '@maybe0x16',
     'personal-link': '@eterytyy_blog',
     'close-secret': 'click anywhere to close',
@@ -952,6 +964,7 @@ const TEXTS = {
     'footer-copy': 'день ноль приближается. или нет.',
     'book-link': 'книга →',
     'game-link': 'игра →',
+    'read-book': 'читать книгу →',
     'ch-link': '@maybe0x16',
     'personal-link': '@eterytyy_blog',
     'close-secret': 'нажмите где угодно чтобы закрыть',
@@ -1097,6 +1110,7 @@ function applyLang(lang) {
       'tFooterCopy': t['footer-copy'],
       'tBookLink': t['book-link'],
       'tGameLink': t['game-link'],
+      'tReadBook': t['read-book'],
       'tChLink': t['ch-link'],
       'tPersonalLink': t['personal-link'],
       'tPostsMore': t['posts-more'],
@@ -1133,13 +1147,6 @@ function applyLang(lang) {
     document.body.style.opacity = '1';
     localStorage.setItem('lang', lang);
   }, 300);
-}
-
-function setLang(lang) {
-  const ls = document.getElementById('langScreen');
-  ls.classList.add('hide');
-  setTimeout(() => { ls.style.display = 'none'; }, 800);
-  applyLang(lang);
 }
 
 // audio
@@ -1345,35 +1352,13 @@ document.addEventListener('touchmove',e=>{ const t=e.touches[0]; mouseX=t.client
 document.addEventListener('touchend',()=>{ mouseX=-999; mouseY=-999; gameBlur.style.backdropFilter='blur(22px)'; gameHint.style.opacity=1; });
 
 // progress bar animate on scroll
-const endDate = new Date('2026-05-29T23:47:00');
+const endDate = new Date('2026-05-29T21:00:00Z');
 
-// lock book/game до 23:47 29 мая
-(function checkRelease() {
-  const now = new Date();
-  const released = now >= endDate;
-  const bookLink = document.getElementById('tBookLink');
-  const gameBtn  = document.getElementById('tGameBtn');
-  const gameLink = document.getElementById('tGameLink');
-  if (!released) {
-    const diff = endDate - now;
-    const h = Math.floor(diff/3600000);
-    const m = Math.floor((diff%3600000)/60000);
-    const s = Math.floor((diff%60000)/1000);
-    const cd = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    if(bookLink){ bookLink.style.pointerEvents='none'; bookLink.style.opacity='0.25'; bookLink.textContent=`book — ${cd}`; }
-    if(gameBtn) { gameBtn.style.pointerEvents='none';  gameBtn.style.opacity='0.25';  gameBtn.textContent=cd; }
-    if(gameLink){ gameLink.style.pointerEvents='none'; gameLink.style.opacity='0.25'; gameLink.textContent=`game — ${cd}`; }
-    setTimeout(checkRelease, 1000);
-  } else {
-    if(bookLink){ bookLink.style.pointerEvents=''; bookLink.style.opacity=''; bookLink.textContent='the book →'; }
-    if(gameBtn) { gameBtn.style.pointerEvents='';  gameBtn.style.opacity='';  gameBtn.textContent='play →'; }
-    if(gameLink){ gameLink.style.pointerEvents=''; gameLink.style.opacity=''; gameLink.textContent='the game →'; }
-  }
-})();
+// progress bar
 const progressBar = document.getElementById('progressBar');
 const progressPct = document.getElementById('progressPct');
 if(progressBar) {
-  const startDate = new Date('2026-02-18T23:47:00'); // day 100
+  const startDate = new Date('2026-02-18T23:47:00');
   const total = endDate - startDate;
   const elapsed = new Date() - startDate;
   const pct = Math.min(100, Math.max(0, Math.round(elapsed/total*100)));
@@ -1390,7 +1375,7 @@ if(progressBar) {
   progressBar.style.width = '0%';
 }
 
-// typewriter для hero
+// typewriter
 const heroSub = document.getElementById('tHeroSub');
 function typewrite(el, text, speed=60) {
   el.textContent = '';
@@ -1404,6 +1389,7 @@ setTimeout(() => {
   if(heroSub && currentLang === 'en') typewrite(heroSub, 'or maybe not');
   else if(heroSub) typewrite(heroSub, 'или нет');
 }, 1200);
+
 function updateCountdown(){
   const diff=Math.max(0,Math.ceil((endDate-new Date())/(1000*60*60*24)));
   document.getElementById('heroNum').textContent=diff;
@@ -1418,99 +1404,30 @@ setInterval(updateCountdown,60000);
 const reveals=document.querySelectorAll('.reveal');
 const obs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);} });
-},{threshold:0.1});
-reveals.forEach(r=>obs.observe(r));
+},{threshold:0.15});
+reveals.forEach(el=>obs.observe(el));
 
-// secrets
-function showSecret(id){
-  const el=document.getElementById(id);
-  const textEl=el.querySelector('.secret-text');
-  el.style.display='flex';
-  requestAnimationFrame(()=>requestAnimationFrame(()=>{
-    el.classList.add('active');
-    setTimeout(()=>textEl.classList.add('glitching'),300);
-  }));
-  el.addEventListener('click',()=>{
-    el.classList.remove('active');
-    textEl.classList.remove('glitching');
-    setTimeout(()=>{ el.style.display='none'; },600);
-  },{once:true});
-}
-
-// secret 1 — счётчик 5 раз
-let clickCount=0,clickTimer;
-document.getElementById('heroNum').addEventListener('click',()=>{
-  clickCount++;
-  clearTimeout(clickTimer);
-  clickTimer=setTimeout(()=>{ clickCount=0; },1500);
-  if(clickCount>=5){ clickCount=0; showSecret('secret1'); }
-});
-
-// secret 2 — probably nothing 3 раза
-let pnCount=0,pnTimer;
-document.getElementById('probNothing').addEventListener('click',()=>{
-  pnCount++;
-  clearTimeout(pnTimer);
-  pnTimer=setTimeout(()=>{ pnCount=0; },1200);
-  if(pnCount>=3){ pnCount=0; showSecret('secret2'); }
-});
-
-// secret 3 — точка после "something started"
-document.getElementById('dot').addEventListener('click',()=>showSecret('secret3'));
-
-// secret 4 — scroll to bottom then back to top (full journey x2)
-let s4LastY=0, s4Dir=0, s4HitBottom=false, s4Count=0, s4Timer;
+// s4 secret — scroll to bottom and back x2
+let s4LastY=0,s4Dir=0,s4HitBottom=false,s4Count=0,s4Timer;
 window.addEventListener('scroll',()=>{
   const y=window.scrollY;
   const maxY=document.body.scrollHeight-window.innerHeight;
   const newDir=y>s4LastY?1:-1;
   if(newDir!==s4Dir){
     s4Dir=newDir;
-    // hit bottom
-    if(newDir===-1 && y>maxY*0.9) s4HitBottom=true;
-    // back to top after hitting bottom
-    if(newDir===1 && y<maxY*0.1 && s4HitBottom){
-      s4HitBottom=false; s4Count++;
+    if(newDir===-1&&y>maxY*0.9)s4HitBottom=true;
+    if(newDir===1&&y<maxY*0.1&&s4HitBottom){
+      s4HitBottom=false;s4Count++;
       clearTimeout(s4Timer);
-      s4Timer=setTimeout(()=>{ s4Count=0; },8000);
-      if(s4Count>=2){ s4Count=0; showSecret('secret4'); }
+      s4Timer=setTimeout(()=>{s4Count=0;},8000);
+      if(s4Count>=2){s4Count=0;showSecret('secret4');}
     }
   }
   s4LastY=y;
 });
 
-// riddles
-const riddles=[
-  {id:'r1',answers:['something started'],hint:'it was the first two words. check the very beginning.'},
-  {id:'r2',answers:['weather','mood','expression','interior'],hint:'we contain more weather than we are willing to admit.'},
-  {id:'r3',answers:['book','game','release','day zero','the book','the game','book and game'],hint:'it was never about the end. it was about what starts there.'},
-];
-riddles.forEach(({id,answers,hint})=>{
-  const input=document.getElementById(id);
-  const fb=document.getElementById(id+'f');
-  input.addEventListener('keydown',e=>{
-    if(e.key!=='Enter'||!input.value.trim()) return;
-    const val=input.value.trim().toLowerCase();
-    if(answers.some(a=>val.includes(a))){
-      fb.textContent='✓ correct.'; fb.className='riddle-feedback show';
-    } else {
-      fb.textContent=hint; fb.className='riddle-feedback wrong';
-      setTimeout(()=>fb.className='riddle-feedback',3500);
-    }
-  });
-});
 
-// lights out — 3 минуты
-setTimeout(()=>{
-  const lo=document.getElementById('lightsOut');
-  lo.style.display='flex';
-  requestAnimationFrame(()=>requestAnimationFrame(()=>lo.classList.add('fading')));
-  lo.addEventListener('click',()=>{
-    lo.classList.remove('fading');
-    setTimeout(()=>{ lo.style.display='none'; },2000);
-  });
-},3*60*1000);
 </script>
-<script data-goatcounter="https://eterytyy.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
 </body>
 </html>
