@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>oblivion — the absolute</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050608; 
+    --paper: #c2c9d1; 
+    --dim: #2a2e35; 
+    --muted: #667282; 
+    --accent: #788a9e; 
+  }
+
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--bg);
+    color: var(--paper);
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    overflow-x: hidden;
+    cursor: default;
+    line-height: 1.8;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  #introScreen {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 2s ease, filter 2s ease;
+  }
+  #introScreen.hiding {
+    opacity: 0;
+    filter: blur(15px);
+    pointer-events: none;
+  }
+  #introScreen.hidden { display: none; }
+
+  .is-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.5em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 50px;
+    opacity: 0;
+    animation: is-in 2s ease 0.5s forwards;
+  }
+
+  .is-title {
+    font-size: clamp(50px, 12vw, 130px);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+    text-align: center;
+    margin-bottom: 70px;
+    opacity: 0;
+    animation: is-in 2s ease 1s forwards;
+  }
+
+  .is-btn {
+    background: transparent;
+    border: 1px solid var(--dim);
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 15px 30px;
+    cursor: pointer;
+    transition: all 0.5s;
+    opacity: 0;
+    animation: is-in 2s ease 1.5s forwards;
+  }
+  .is-btn:hover {
+    color: var(--bg);
+    background-color: var(--paper);
+  }
+
+  @keyframes is-in {
+    0% { opacity: 0; transform: translateY(15px); filter: blur(5px); }
+    100% { opacity: 1; transform: none; filter: blur(0); }
+  }
+
+  #main {
+    opacity: 0;
+    transition: opacity 2s ease 0.5s;
+  }
+  #main.visible { opacity: 1; }
+
+  #cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 80px 20px;
+    border-bottom: 1px solid var(--dim);
+    position: relative;
+  }
+
+  .cover-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.6em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 50px;
+  }
+
+  .cover-title {
+    font-size: clamp(60px, 15vw, 160px);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    color: var(--paper);
+    margin-bottom: 40px;
+    text-transform: lowercase;
+  }
+
+  .cover-subtitle {
+    font-style: italic;
+    font-size: clamp(18px, 2vw, 24px);
+    color: var(--muted);
+    max-width: 650px;
+    line-height: 1.8;
+    margin-bottom: 80px;
+  }
+
+  .cover-scroll {
+    position: absolute;
+    bottom: 50px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: var(--muted);
+    text-transform: lowercase;
+    animation: pulse 4s infinite ease-in-out;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.2; transform: translateY(0); }
+    50% { opacity: 0.7; transform: translateY(8px); }
+  }
+
+  .chapter {
+    padding: 150px clamp(20px, 8vw, 120px);
+    border-bottom: 1px solid var(--dim);
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .ch-header {
+    margin-bottom: 100px;
+    text-align: center;
+  }
+
+  .ch-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.5em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  .ch-title {
+    font-size: clamp(32px, 5vw, 60px);
+    font-weight: 400;
+    line-height: 1.1;
+    color: var(--paper);
+    letter-spacing: 0.02em;
+  }
+
+  .ch-body {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .para {
+    font-size: clamp(19px, 1.8vw, 25px);
+    line-height: 2;
+    color: var(--paper);
+    opacity: 0.9;
+    text-align: left;
+    text-indent: 2em;
+  }
+
+  .para.no-indent {
+    text-indent: 0;
+  }
+
+  .poem-container {
+    padding: 60px 0;
+    margin: 40px 0;
+    display: flex;
+    justify-content: center;
+    position: relative;
+  }
+
+  .poem-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 2px; height: 30px;
+    background-color: var(--accent);
+    opacity: 0.5;
+  }
+
+  .poem {
+    font-size: clamp(18px, 1.6vw, 22px);
+    line-height: 2.2;
+    color: var(--muted);
+    white-space: pre-wrap;
+    text-align: left;
+    font-family: 'Space Mono', monospace;
+  }
+  
+  .poem em {
+      color: var(--paper);
+      font-style: normal;
+  }
+
+  #footer {
+    padding: 120px 20px;
+    text-align: center;
+  }
+  
+  #footer p {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.5em;
+      color: var(--dim);
+      text-transform: uppercase;
+  }
+
+  @media (max-width: 768px) {
+    .para { text-indent: 1em; }
+    .poem { padding-left: 15px; border-left: 2px solid var(--dim); }
+    .poem-container::before { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div id="introScreen">
+  <p class="is-eyebrow">#oblivion</p>
+  <h1 class="is-title">без иллюзий.</h1>
+  <button class="is-btn" onclick="enterSite()">открыть</button>
+</div>
+
+<div id="main">
+  <div id="cover">
+    <p class="cover-eyebrow">#oblivion · volume ii</p>
+    <h1 class="cover-title">oblivion.</h1>
+    <p class="cover-subtitle">
+       то, что происходит, когда счетчик останавливается. когда тишина — это больше не признак того, что ты сдался.
+    </p>
+    <div class="cover-scroll">вниз</div>
+  </div>
+
+  <div class="chapter">
+    <div class="ch-header">
+      <span class="ch-num">I</span>
+      <h2 class="ch-title">Фантомные боли и ложная архитектура</h2>
+    </div>
+    <div class="ch-body">
+      <p class="para no-indent">
+         Мы тратим годы, выстраивая вокруг себя монументальную, непробиваемую крепость из притворства. Мы учимся справляться. Мы становимся идеальными антикризисными менеджерами своей собственной катастрофы. Если ты привык всё чинить сам, ты начинаешь искренне верить, что твоя безопасность зависит только от того, насколько быстро ты успеешь сгруппироваться перед ударом. Ты контролируешь периметр. Ты сканируешь каждую комнату. Ты параноик с отличной улыбкой.
+      </p>
+      <p class="para">
+         Твоя нервная система просто выгорает дотла, ожидая катастрофы. Потому что раньше катастрофа всегда наступала. И когда ты выживаешь раз за разом, ты думаешь: ну хорошо, значит, так и надо жить. Значит, жизнь — это просто бесконечное удерживание бетонной плиты, чтобы она не раздавила тебя и тех, кто рядом.
+      </p>
+      <p class="para">
+         А потом пол просто уходит из-под ног.
+      </p>
+      <p class="para">
+         Он проваливается не там, где ты ждал, и вообще не так, как ты рассчитывал. Вся твоя броня летит к чертям. В этот момент ты инстинктивно сжимаешься и ждешь, что сейчас останешься один — потому что так было всегда. Как только ты становился тяжелым и неудобным, как только твоя боль начинала занимать слишком много места, люди исчезали.
+      </p>
+      <p class="para">
+         Но вдруг происходит сбой. Твой травмированный мозг отказывается это понимать.
+      </p>
+      
+      <div class="poem-container">
+        <div class="poem">есть люди,
+которые просто появляются.
+ровно в тот момент,
+когда ты даже сам не понял,
+что тебе жизненно нужен кто-то рядом.
+
+не те, кто "всегда на связи".
+а те, кто приходит, когда всё рушится —
+будто они сами почувствовали этот толчок,
+где бы они ни были.</div>
+      </div>
+
+      <p class="para no-indent">
+         Знаешь, что самое странное? Они не пытаются тебя спасти. К черту спасателей. Им вечно нужна плата — твоя благодарность, твое быстрое выздоровление, чтобы они могли подтвердить свою значимость. Твоя боль для них — просто сцена.
+      </p>
+      <p class="para">
+         А эти — другие. Они приходят и просто молча садятся рядом с тобой на обломки. 
+      </p>
+      <p class="para">
+         Это требует колоссальной смелости — вынести чужую темноту и не бросаться сразу чинить проводку. Не нести эту позитивную ложь вроде "всё будет хорошо". Просто быть якорем там, где полностью отказала гравитация.
+      </p>
+
+      <div class="poem-container">
+        <div class="poem">они не всегда говорят правильные вещи.
+чаще всего они вообще молчат.
+они просто сидят с тобой.
+и позволяют тебе быть
+любым в эту ночь.
+
+и этого достаточно.</div>
+      </div>
+
+      <p class="para no-indent">
+         Твоя старая прошивка кричит: "Где подвох? Скоро они уйдут". Но они сидят. Час, два, до утра. И тогда внутри что-то ломается — и в этот раз так, как надо.
+      </p>
+      <p class="para">
+         Ты понимаешь, что больше не должен тащить всё это один. Что тебя можно любить даже тогда, когда ты не справляешься.
+      </p>
+    </div>
+  </div>
+
+  <div class="chapter">
+    <div class="ch-header">
+      <span class="ch-num">II</span>
+      <h2 class="ch-title">Право на пустоту</h2>
+    </div>
+    <div class="ch-body">
+      <p class="para no-indent">
+         Когда ты годами пережевываешь свою боль в тексты — каждую ночь, в 23:47, как проклятый, — ты попадаешь в ловушку. Тебе начинает казаться, что если ты не выплеснул свои чувства на экран, не придал им форму, то тебя просто нет. 
+      </p>
+      <p class="para">
+         Твой дневник становится твоим аппаратом жизнеобеспечения. Ты думаешь: перестану писать — исчезну.
+      </p>
+      <p class="para">
+         А потом наступает день, когда машина останавливается.
+      </p>
+
+      <div class="poem-container">
+        <div class="poem">я выпал на какое-то время.
+
+без драмы.
+не потому что случилась катастрофа.
+просто... закончились вещи,
+которые нужно было прокричать.</div>
+      </div>
+
+      <p class="para no-indent">
+         Первая реакция — паника. В смысле мне нечего сказать? Я что, сдался? Шум меня поглотил? Ты садишься перед пустым экраном, ждешь, когда грудину сдавит, как обычно... а там просто тихо. Не зловеще тихо, как перед панической атакой. А обычно. Пусто. Комната без монстров.
+      </p>
+
+      <div class="poem-container">
+        <div class="poem">и это так непривычно
+для того, кто привык строчить
+каждую ночь в 23:47.
+
+но может, эта тишина —
+и есть самый важный пост.
+
+неделя молчания —
+это неделя, когда тебе
+не нужно чинить себя
+вслух.</div>
+      </div>
+
+      <p class="para no-indent">
+         Мы привыкли обесценивать тишину. Нам кажется, что если мы не страдаем напоказ, то мы не живем. Это иллюзия. Отсутствие слов часто значит, что рана наконец-то затянулась. Тебе больше не надо расковыривать её каждый вечер, чтобы проверить, идет ли кровь.
+      </p>
+      <p class="para">
+         В какой-то момент придется простить ту версию себя, которая всё это тащила. Ту, что говорила "да", когда всё внутри сопротивлялось. Не презирай её. Она не была слабой. Она просто выживала как умела, пока ты не стал сильнее. Скажи ей спасибо. И отпусти.
+      </p>
+    </div>
+  </div>
+
+  <div class="chapter">
+    <div class="ch-header">
+      <span class="ch-num">III</span>
+      <h2 class="ch-title">Роскошь банальности</h2>
+    </div>
+    <div class="ch-body">
+      <p class="para no-indent">
+         Нас воспитали на историях, где всё меняется под музыку. Слезы, дождь, монолог на перроне — и всё, жизнь четко поделилась на «До» и «После».
+      </p>
+      <p class="para">
+         В реальности всё иначе. Настоящие сдвиги происходят в абсолютной, глухой тишине.
+      </p>
+
+      <div class="poem-container">
+        <div class="poem">самые важные вещи
+происходят без анонса.
+
+никаких фанфар.
+никакого "до и после".</div>
+      </div>
+
+      <p class="para no-indent">
+         Ты не просыпаешься вдруг просветленным и исцеленным. Шрам на месте. Если прислушаться — всё еще слышен гул. Но воздух вокруг становится другим.
+      </p>
+      <p class="para">
+         Исцеление выглядит как скука. Это когда ты просто делаешь утренний кофе, и это больше не требует от тебя героических усилий воли. Когда ты сидишь с кем-то в одной комнате, вы смотрите в разные экраны, и ты больше не высчитываешь в уме, через сколько дней этот человек от тебя уйдет. 
+      </p>
+
+      <div class="poem-container">
+        <div class="poem">ты просто проживаешь один день.
+потом второй.
+потом третий.
+
+а потом ловишь себя на том,
+что всё стало иначе.
+
+не идеально.
+не починено до конца.
+просто... по-другому.
+и ты отчаянно не хочешь это терять.</div>
+      </div>
+      
+      <p class="para no-indent">
+         Любовь — это не когда вы тащите друг друга из горящего дома. Это когда дом больше не горит. Когда вы просто решаете, кто сегодня моет посуду. В этой абсолютной, роскошной банальности больше смысла, чем во всей той драме, которой мы привыкли дышать.
+      </p>
+    </div>
+  </div>
+
+  <div class="chapter">
+    <div class="ch-header">
+      <span class="ch-num">IV</span>
+      <h2 class="ch-title">Сломанные дни</h2>
+    </div>
+    <div class="ch-body">
+      <p class="para no-indent">
+         Если ты вышел из изоляции, это не делает тебя неуязвимым. Люди всё равно ломаются. И ты будешь ошибаться. Усталость накроет, старая защита сработает, и ты скажешь что-то такое, о чем пожалеешь еще до того, как закроешь рот.
+      </p>
+
+      <div class="poem-container">
+        <div class="poem">иногда день ломается
+еще до того, как начнется.
+
+слова выходят криво.
+тишина становится тяжелой.
+и на секунду ты забываешь,
+что перед тобой тот самый человек,
+ради которого ты готов на всё.</div>
+      </div>
+
+      <p class="para no-indent">
+         Раньше такой день был бы концом света. Ты бы заперся, изводил себя, решив, что ты разрушаешь всё, к чему прикасаешься.
+      </p>
+      <p class="para">
+         Но теперь ты учишься другой механике. Механике возвращения.
+      </p>
+
+      <div class="poem-container">
+        <div class="poem">а потом это проходит.
+
+не гладко.
+не так, будто ничего не было.
+но проходит.
+
+и то, что наступает после —
+когда два человека
+выбирают вернуться
+друг к другу —
+
+для этого у меня даже нет подходящего слова.</div>
+      </div>
+
+      <p class="para no-indent">
+         Это самая взрослая вещь на свете. Не та пластиковая картинка из соцсетей, где все идеальны. А настоящая, глубокая привязанность. Когда вы сказали лишнее, тишина звенит, но вы смотрите друг на друга и выбираете не сжигать мосты. Выбираете починить этот день.
+      </p>
+      
+      <p class="para">
+         И часы после этого ощущаются иначе. День будто получил шанс, которого не заслуживал. Вы это пережили. Вы больше не рассыпаетесь в пыль от одной ошибки.
+      </p>
+    </div>
+  </div>
+
+  <div class="chapter">
+    <div class="ch-header">
+      <span class="ch-num">V</span>
+      <h2 class="ch-title">Прямой эфир</h2>
+    </div>
+    <div class="ch-body">
+      <p class="para no-indent">
+         Самая крупная иллюзия в нашей жизни — это вера в черновик. Мы постоянно ждем настоящей жизни. "Вот проработаю травмы...", "вот разберусь с головой..." — и тогда заживу. 
+      </p>
+      <p class="para">
+         Но репетиции не будет. Всё уже идет в прямом эфире. Камеры включены, и кнопки "отмена" не существует.
+      </p>
+
+      <div class="poem-container">
+        <div class="poem">у нас только одна попытка.
+
+никаких черновиков.
+жизнь разворачивается в реальном времени.
+
+и иногда от этого веса
+хочется просто исчезнуть.</div>
+      </div>
+
+      <p class="para no-indent">
+         Отсутствие Ctrl+Z пугает до паралича. Сказал — всё, слово в комнате. Ушел — всё, точка. Иногда хочется просто выйти из этой игры и отказаться от ответственности.
+      </p>
+      <p class="para">
+         Но потом перспектива меняется.
+      </p>
+
+      <div class="poem-container">
+        <div class="poem">может, всё наоборот.
+
+то, что эта жизнь одна,
+и делает её такой ценной.
+без возможности перезапуска.</div>
+      </div>
+
+      <p class="para no-indent">
+         Если бы всё можно было переиграть — оно бы ничего не стоило. Гарантий нет. Боль неизбежна. Будут дни, когда встать с кровати — это уже подвиг.
+      </p>
+
+      <div class="poem-container">
+        <div class="poem">будут дни, когда покажется,
+что вынести это невозможно.
+
+захочется всё бросить,
+найти выход.
+
+но этот вес меняется.
+он становится легче,
+даже если никогда не исчезнет насовсем.</div>
+      </div>
+
+      <p class="para no-indent">
+         Ты не избавляешься от багажа. Ты просто становишься сильнее. То, что вчера ломало тебе хребет, завтра станет просто тяжелым рюкзаком, с которым вполне можно идти в гору.
+      </p>
+      <p class="para">
+         Сдаться — это не отдохнуть. Отдохнул — вернулся. Сдался — потерял всё, что могло быть дальше.
+      </p>
+
+      <div class="poem-container">
+        <div class="poem">не каждый день имеет смысл.
+но всё это вместе —
+вся эта неровная, сложная история —
+
+она того стоит.
+если это вообще происходит,
+значит, не просто так.</div>
+      </div>
+
+      <p class="para no-indent">
+         Это больше не крик в пустоту в 23:47. Это реальность. Без черновиков, без защитных фильтров. Со всеми шрамами, сдвигами пола, тишиной и людьми, которые остались.
+      </p>
+      <p class="para">
+         Это Забвение. Не потеря памяти, а потеря нужды постоянно страдать, чтобы чувствовать себя живым. Ты жив. И этого достаточно.
+      </p>
+    </div>
+  </div>
+
+  <div id="footer">
+    <p>#oblivion · absolute · end</p>
+  </div>
+</div>
+
+<script>
+  function enterSite() {
+    const introScreen = document.getElementById('introScreen');
+    const main = document.getElementById('main');
+    
+    introScreen.classList.add('hiding');
+    setTimeout(() => {
+      introScreen.classList.add('hidden');
+      main.classList.add('visible');
+    }, 2000);
+  }
+</script>
+
+</body>
+</html>
